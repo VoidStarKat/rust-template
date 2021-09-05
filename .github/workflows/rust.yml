@@ -23,12 +23,14 @@ jobs:
         profile: minimal
         toolchain: ${{ matrix.rust }}
         override: true
+    - name: Install Cargo Make
+      uses: davidB/rust-cargo-make@v1
         
     - name: Build and run tests
       uses: actions-rs/cargo@v1
       with:
-        command: test
-        args: --all
+        command: make
+        args: ci-flow
 
   lint:
     name: Check format and lint
@@ -42,14 +44,16 @@ jobs:
         toolchain: stable
         override: true
         components: rustfmt, clippy
+    - name: Install Cargo Make
+      uses: davidB/rust-cargo-make@v1
         
     - name: Check rustfmt
       uses: actions-rs/cargo@v1
       with:
-        command: fmt
-        args: --all -- --check
+        command: make
+        args: check-format-ci-flow
     - name: Run lints
       uses: actions-rs/cargo@v1
       with:
-        command: clippy
-        args: -- -D warnings
+        command: make
+        args: clippy-ci-flow
