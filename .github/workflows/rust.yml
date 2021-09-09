@@ -3,11 +3,21 @@ name: Rust
 on: [push, pull_request]
 
 env:
+  CARGO_INCREMENTAL: 0
+  CARGO_NET_RETRY: 10
+  RUSTUP_MAX_RETRIES: 10
   CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: full
+  RUSTFLAGS: "-D warnings"
+  # Disable debuginfo for faster compile
+  CARGO_PROFILE_DEV_DEBUG: 0
+  CARGO_PROFILE_TEST_DEBUG: 0
+  CARGO_PROFILE_BENCH_DEBUG: 0
+  CI: 1
 
 jobs:
-  test:
-    name: Build and run tests
+  rust:
+    name: Rust
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -16,44 +26,24 @@ jobs:
           - stable
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
+      
     - name: Install Rust toolchain
       uses: actions-rs/toolchain@v1
       with:
         profile: minimal
         toolchain: ${{ matrix.rust }}
         override: true
+        
+    - name: Cache Dependencies
+      uses: Swatinem/rust-cache@v1
+      
     - name: Install Cargo Make
       uses: davidB/rust-cargo-make@v1
         
-    - name: Build and run tests
+    - name: cargo-make ci-flow
       uses: actions-rs/cargo@v1
       with:
         command: make
         args: ci-flow
-
-  lint:
-    name: Check format and lint
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Install stable toolchain
-      uses: actions-rs/toolchain@v1
-      with:
-        profile: minimal
-        toolchain: stable
-        override: true
-        components: rustfmt, clippy
-    - name: Install Cargo Make
-      uses: davidB/rust-cargo-make@v1
-        
-    - name: Check rustfmt
-      uses: actions-rs/cargo@v1
-      with:
-        command: make
-        args: check-format-ci-flow
-    - name: Run lints
-      uses: actions-rs/cargo@v1
-      with:
-        command: make
-        args: clippy-ci-flow
