@@ -35,6 +35,7 @@ jobs:
         profile: minimal
         toolchain: ${{ matrix.rust }}
         override: true
+        components: clippy,rustfmt
         
     - name: Cache Dependencies
       uses: Swatinem/rust-cache@v1
