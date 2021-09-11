@@ -5,6 +5,9 @@ min_version = "0.35.0"
 CI_CARGO_TEST_FLAGS = { value = "--locked -- --nocapture", condition = { env_true = [
     "CI",
 ] } }
+CARGO_MAKE_CLIPPY_ARGS = { value = "${CARGO_MAKE_CLIPPY_ALL_FEATURES_WARN}", condition = { env_true = [
+    "CI",
+] } }
 
 # Override for CI flag additions
 [tasks.test]
@@ -17,8 +20,8 @@ args = [
 
 # Let clippy run on non-nightly CI
 [tasks.clippy-ci-flow]
-condition = { env_set = [ "CARGO_MAKE_RUN_CLIPPY" ] }
+condition = { env_set = ["CARGO_MAKE_RUN_CLIPPY"] }
 
 # Let format check run on non-nightly CI
 [tasks.check-format-ci-flow]
-condition = { env_set = [ "CARGO_MAKE_RUN_CHECK_FORMAT" ] }
+condition = { env_set = ["CARGO_MAKE_RUN_CHECK_FORMAT"] }
